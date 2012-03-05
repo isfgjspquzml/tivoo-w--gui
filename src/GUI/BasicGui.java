@@ -46,8 +46,10 @@ public class BasicGui{
 	private JMenuItem mnuItemAbout = new JMenuItem("About"); // About Entry
 	private JMenuItem mnuItemLoad = new JMenuItem("Load..."); //Load
 	private JMenuItem mnuItemFilter = new JMenuItem("Filter"); //Filter
-	private JMenuItem mnuItemHTML = new JMenuItem("Write HTML"); //Filter
-	private JMenuItem mnuItemHTMLPreview = new JMenuItem("Preview HTML"); //Filter
+	private JMenuItem mnuItemCont = new JMenuItem("Continue"); //Filter
+
+	//	private JMenuItem mnuItemHTML = new JMenuItem("Write HTML"); //Filter
+	//	private JMenuItem mnuItemHTMLPreview = new JMenuItem("Preview HTML"); //Filter
 
 	/** Constructor for the GUI */
 	public BasicGui(){
@@ -59,8 +61,11 @@ public class BasicGui{
 		mnuFile.add(mnuItemQuit);  // Create Quit line
 		mnuFile.add(mnuItemLoad);	// Create Load
 		mnuFile.add(mnuItemFilter);
-		mnuFile.add(mnuItemHTML);
-		mnuFile.add(mnuItemHTMLPreview);
+		mnuFile.add(mnuItemCont);
+
+		//		mnuFile.add(mnuItemHTML);
+		//		mnuFile.add(mnuItemHTMLPreview);
+
 		mnuHelp.add(mnuItemAbout); // Create About line
 		mb.add(mnuFile);        // Add Menu items to form
 		mb.add(mnuHelp);
@@ -72,8 +77,24 @@ public class BasicGui{
 		mnuItemQuit.addActionListener(new ListenMenuQuit());
 		mnuItemLoad.addActionListener(new ListenMenuLoad());
 		mnuItemFilter.addActionListener(new ListenMenuFilter());
-		mnuItemHTML.addActionListener(new ListenMenuHTML());
-		mnuItemHTMLPreview.addActionListener(new ListenMenuHTMLPreview());
+		mnuItemCont.addActionListener(new ListenMenuCont());
+
+
+		//		mnuItemHTML.addActionListener(new ListenMenuHTML());
+		//		mnuItemHTMLPreview.addActionListener(new ListenMenuHTMLPreview());
+	}
+
+	public class ListenMenuCont implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			if(parsecheck) {
+				GUIPreview guipreview = new GUIPreview();
+				guipreview.launchFrame3();
+				parsecheck = false;
+			}
+			else{
+				System.out.println("Load file first");
+			}
+		}
 	}
 
 	public class ListenMenuHTMLPreview implements ActionListener{
@@ -344,6 +365,68 @@ public class BasicGui{
 					}
 				}
 			}
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Preview GUI
+
+	public class GUIPreview{
+
+		// Initialize all swing objects.
+		private JFrame f1 = new JFrame("Selector"); //create Frame
+		private JPanel pnlNorth = new JPanel(); // North quadrant 
+		private JPanel pnlCenter = new JPanel(); // Center quadrant
+
+		// Buttons some there is something to put in the panels
+		private	JButton btnNorth = new JButton("Write HTML");
+		private JButton btnCenter = new JButton("Write and Preview HTML");
+
+		public GUIPreview() {
+			// Add Buttons
+			pnlNorth.add(btnNorth);
+			pnlCenter.add(btnCenter);
+
+			// Setup Main Frame
+			f1.getContentPane().setLayout(new BorderLayout());
+			f1.getContentPane().add(pnlNorth, BorderLayout.NORTH);
+			f1.getContentPane().add(pnlCenter, BorderLayout.CENTER);
+
+			btnNorth.addActionListener(new btnNorthListener());
+			btnCenter.addActionListener(new btnCenterListener());
+		}
+
+		public class btnNorthListener implements ActionListener{
+			public void actionPerformed(ActionEvent e){
+				Main.generateHTML();
+			}
+		}
+		public class btnCenterListener implements ActionListener{
+			public void actionPerformed(ActionEvent e){
+				htmlcheck = true;
+				Main.generateHTML();
+				parsecheck = false;
+
+				if(htmlcheck) {				
+					for(File f:EventCollection.topreview) {      
+						try {
+							if(f.toURI().toString().contains("Summary")) {
+								HTMLExample foo = new HTMLExample(f.toURI().toString());
+							}
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}			}
+		}
+		public void launchFrame3(){
+			// Display Frame
+			f1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f1.pack(); //Adjusts panel to components for display
+			f1.setVisible(true);
 		}
 	}
 }
